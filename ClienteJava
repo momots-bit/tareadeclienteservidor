@@ -6,155 +6,75 @@ import java.util.Scanner;
 public class ClienteJava {
 
     public static void main(String[] args) {
-
         try {
-
             // SCANNER
-
-            Scanner teclado =
-                new Scanner(System.in);
+            Scanner teclado = new Scanner(System.in);
 
             // IP DEL SERVIDOR
-            System.out.print(
-                "Escribe la IP del servidor: "
-            );
-
-            String ipServidor =
-                teclado.nextLine();
+            System.out.print("Escribe la IP del servidor: ");
+            String ipServidor = teclado.nextLine();
 
             // CONECTAR AL SERVIDOR
-            Socket cliente =
-                new Socket(
-                    ipServidor,
-                    5000
-                );
-
-            System.out.println(
-                "Conectado al servidor."
-            );
+            Socket cliente = new Socket(ipServidor, 5000);
+            System.out.println("Conectado al servidor.");
 
             // ENTRADA Y SALIDA
-            BufferedReader entrada =
-                new BufferedReader(
-                    new InputStreamReader(
-                        cliente.getInputStream()
-                    )
-                );
-
-            PrintWriter salida =
-                new PrintWriter(
-                    cliente.getOutputStream()
-                );
+            BufferedReader entrada = new BufferedReader(new InputStreamReader(cliente.getInputStream()));
+            PrintWriter salida = new PrintWriter(cliente.getOutputStream());
 
             // NOMBRE DE USUARIO
-            System.out.print(
-                "Escribe tu nombre de usuario: "
-            );
-
-            String usuario =
-                teclado.nextLine();
+            System.out.print("Escribe tu nombre de usuario: ");
+            String usuario = teclado.nextLine();
 
             // ENVIAR NOMBRE
-            salida.print(
-                usuario + "\n"
-            );
-
+            salida.print(usuario + "\n");
             salida.flush();
 
             // HILO PARA RECIBIR MENSAJES
-            Thread hiloRecibir =
-                new Thread(
+            Thread hiloRecibir = new Thread(
                     () -> {
-
                         try {
-
                             String mensaje;
-
                             while (
-                                (mensaje =
-                                    entrada.readLine())
-                                != null
-                            ) {
-
+                                (mensaje = entrada.readLine()) != null) {
                                 System.out.println();
-
-                                System.out.println(
-                                    mensaje
-                                );
-
-                                System.out.print(
-                                    "Tú: "
-                                );
+                                System.out.println(mensaje);
+                                System.out.print("Tú: ");
                             }
-
-                        } catch (
-                            IOException e
-                        ) {
-
+                        } catch (IOException e) {
                             System.out.println();
-
-                            System.out.println(
-                                "Conexión cerrada."
-                            );
+                            System.out.println("Conexión cerrada.");
                         }
                     }
                 );
 
             // INICIAR HILO
-
             hiloRecibir.setDaemon(true);
-
             hiloRecibir.start();
 
             // ENVIAR MENSAJES
             while (true) {
-
-                System.out.print(
-                    "Tú: "
-                );
-
-                String mensaje =
-                    teclado.nextLine();
+                System.out.print("Tú: ");
+                String mensaje = teclado.nextLine();
 
                 // SALIR
-                if (
-                    mensaje.equalsIgnoreCase(
-                        "/salir"
-                    )
-                ) {
-
+                if (mensaje.equalsIgnoreCase("/salir")) {
                     break;
                 }
 
                 // ENVIAR MENSAJE
-
-                salida.print(
-                    mensaje + "\n"
-                );
-
+                salida.print(mensaje + "\n");
                 salida.flush();
             }
 
             // CERRAR CONEXIÓN
             cliente.close();
-
             teclado.close();
-
-
-        } catch (
-            IOException e
-        ) {
-
+        } catch (IOException e) {
             System.out.println();
+            System.out.println("No se pudo conectar con el servidor.");
 
-            System.out.println(
-                "No se pudo conectar con el servidor."
-            );
-
-            System.out.println(
-                "Error: "
-                + e.getMessage()
-            );
+            System.out.println("Error: " + e.getMessage());
         }
     }
 }
