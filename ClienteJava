@@ -1,0 +1,81 @@
+import java.io.*;
+import java.net.*;
+import java.util.Scanner;
+
+
+public class ClienteJava {
+
+    public static void main(String[] args) {
+
+        try {
+            // CONECTARSE AL SERVIDOR
+            Scanner teclado = new Scanner(System.in);
+
+            System.out.print("Escribe la IP del servidor: ");
+            String ipServidor = teclado.nextLine();
+
+            Socket cliente = new Socket(ipServidor, 5000);
+
+            System.out.println("Conectado al servidor");
+
+            // PREPARAR ENTRADA Y SALIDA
+            BufferedReader entrada =
+                    new BufferedReader(
+                            new InputStreamReader(
+                                    cliente.getInputStream()
+                            )
+                    );
+
+            PrintWriter salida =
+                    new PrintWriter(
+                            cliente.getOutputStream(),
+                            true
+                    );
+
+            // NOMBRE DEL USUARIO
+            System.out.print("Escribe tu nombre de usuario: ");
+            String usuario = teclado.nextLine();
+
+            salida.println(usuario);
+
+            // HILO PARA RECIBIR MENSAJES
+            Thread hiloRecibir = new Thread(() -> {
+
+                try {
+
+                    String mensaje;
+
+                    while ((mensaje = entrada.readLine()) != null) {
+
+                        System.out.println("\n" + mensaje);
+                        System.out.print("Tú: ");
+
+                    }
+
+                } catch (IOException e) {
+
+                    System.out.println("Conexión cerrada.");
+
+                }
+            });
+
+            hiloRecibir.start();
+
+            // ENVIAR MENSAJES
+            while (true) {
+
+                System.out.print("Tú: ");
+
+                String mensaje = teclado.nextLine();
+
+                salida.println(mensaje);
+
+            }
+        } catch (IOException e) {
+
+            System.out.println(
+                    "Error al conectar con el servidor."
+            );
+        }
+    }
+}
